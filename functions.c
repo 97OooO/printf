@@ -12,12 +12,12 @@
  * @size: Size specifier
  * Return: Number of chars printed
  */
-int print_char_func(va_list args, char buffer[],
+int my_print_char(va_list types, char buffer[],
 		int flags, int width, int precision, int size)
 {
-	char c = va_arg(args, int);
+	char c = va_arg(types, int);
 
-	return (handle_write_char(c, buffer, flags, widht, precision, size));
+	return (my_handle_write_char(c, buffer, flags, width, precision, size));
 }
 /************************* PRINT STRING *************************/
 
@@ -31,10 +31,11 @@ int print_char_func(va_list args, char buffer[],
  * @size: Size specifier
  * Return: Number of chars printed
  */
-int print_string_func(va_list args, char buffer[], int flags, int width, int precision, int size)
+int my_print_string(va_list types, char buffer[],
+		int flags, int width, int precision, int size)
 {
 	int length = 0, i;
-	char *str = va_arg(args, char *);
+	char *str = va_arg(types, char *);
 
 	UNUSED(buffer);
 	UNUSED(flags);
@@ -55,23 +56,23 @@ int print_string_func(va_list args, char buffer[], int flags, int width, int pre
 
 	if (width > length)
 	{
-		if (flags & F_MINUS)
+		if (flags & MY_FLAG_MINUS)
 		{
 			write(1, &str[0], length);
-			fot (i = width - length; i > 0; i--)
+			for (i = width - length; i > 0; i--)
 				write(1, " ", 1);
 			return (width);
 		}
 		else
 		{
-			for(i = width - length; i > 0; i--)
+			for (i = width - length; i > 0; i--)
 				write(1, " ", 1);
 			write(1, &str[0], length);
 			return (width);
 		}
 	}
 
-	return (write(, str, length));
+	return (write(1, str, length));
 }
 
 /************************* PRINT PERCENT SIGN *************************/
@@ -86,7 +87,8 @@ int print_string_func(va_list args, char buffer[], int flags, int width, int pre
  * @size: Size specifier
  * Return: Number of chars printed
  */
-int print_percent_func(va_list args, char buffer[], int flags, int width, int precision, int size)
+int print_percent_func(va_list args, char buffer[],
+		int flags, int width, int precision, int size)
 {
 	UNUSED(args);
 	UNUSED(buffer);
@@ -94,7 +96,7 @@ int print_percent_func(va_list args, char buffer[], int flags, int width, int pr
 	UNUSED(width);
 	UNUSED(precision);
 	UNUSED(size);
-	return (write(, "%%", 1));
+	return (write(1, "%%", 1));
 }
 
 /************************* PRINT INTEGER *************************/
@@ -109,19 +111,20 @@ int print_percent_func(va_list args, char buffer[], int flags, int width, int pr
  * @size: Size specifier
  * Return: Number of chars printed
  */
-int print_int_func(va_list args, char buffer[], int flags, int width, int precision, int size)
+int my_print_int(va_list types, char buffer[],
+		int flags, int width, int precision, int size)
 {
-	int i = BUFF_SIZE - 2;
+	int i = MY_BUFF_SIZE - 2;
 	int is_negative = 0;
-	long int n = va_arg(args, long int);
+	long int n = va_arg(types, long int);
 	unsigned long int num;
 
 	n = convert_size_number(n, size);
 
-	if (n==0)
+	if (n == 0)
 		buffer[i--] = '0';
 
-	buffer[BUFF_SIZE - 1] = '/0';
+	buffer[MY_BUFF_SIZE - 1] = '/0';
 	num = (unsigned long int)n;
 
 	if (n < 0)
@@ -137,7 +140,7 @@ int print_int_func(va_list args, char buffer[], int flags, int width, int precis
 
 	i++;
 
-	return (write_number(is_negative, i, buffer, flags, width, precision, size));
+	return (my_write_number(is_negative, ind, buffer, flags, width, precision, size));
 }
 
 /************************* PRINT BINARY *************************/
@@ -151,7 +154,8 @@ int print_int_func(va_list args, char buffer[], int flags, int width, int precis
  * @size: Size specifier
  * Return: Numbers of char printed.
  */
-int print_binary(va_list types, char buffer[], int flags, int width, int precision, int size)
+int print_binary(va_list types, char buffer[],
+		int flags, int width, int precision, int size)
 {
 	unsigned int n, m, i, sum;
 	unsigned int a[32];
@@ -169,11 +173,11 @@ int print_binary(va_list types, char buffer[], int flags, int width, int precisi
 	for (i = 0, sum = 0, count = 0; i < 32; i++)
 	{
 		sum += a[i];
-		if (sum || i ==31)
+		if (sum || i == 31)
 		{
 			char z = '0' + a[i];
 
-			write(l, &z, l);
+			write(1, &z, 1);
 			count++;
 		}
 	}
